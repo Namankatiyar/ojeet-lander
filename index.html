@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OJEET-TOOLS — Bold tools for bold learners</title>
+    <meta name="description"
+        content="A personal hub showcasing three products by Ojeet — tools, apps, and platforms built for learners." />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ═══ Background Layers ═══ -->
+    <div class="bg-orb bg-orb--teal" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb--violet" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb--rose" aria-hidden="true"></div>
+    <div class="bg-spotlight" aria-hidden="true"></div>
+    <div class="bg-noise" aria-hidden="true"></div>
+
+    <!-- ═══ Header ═══ -->
+    <header class="site-header">
+        <a href="https://github.com/ojeet" class="site-header__wordmark">OJEET-TOOLS</a>
+    </header>
+
+    <!-- ═══ Main ═══ -->
+    <main class="main-content">
+        <section class="card-grid">
+
+            <!-- Card 1 — OJEET-Study -->
+            <a href="#" class="card" style="--i: 0" id="card-1">
+                <div class="card__image-wrap">
+                    <img src="assets/card1.png" alt="OJEET-Study preview" class="card__image" />
+                </div>
+                <div class="card__content">
+                    <span class="card__tag">
+                        <i data-lucide="book-open"></i>
+                        Website
+                    </span>
+                    <h2 class="card__heading">OJEET-Study</h2>
+                    <p class="card__desc">Distraction free lectures with time tracking</p>
+                    <span class="card__arrow">
+                        <i data-lucide="arrow-up-right"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Card 2 — OJEE-Tracker -->
+            <a href="#" class="card" style="--i: 1" id="card-2">
+                <div class="card__image-wrap">
+                    <img src="assets/card2.png" alt="OJEE-Tracker preview" class="card__image" />
+                </div>
+                <div class="card__content">
+                    <span class="card__tag">
+                        <i data-lucide="bar-chart-3"></i>
+                        Website
+                    </span>
+                    <h2 class="card__heading">OJEE-Tracker</h2>
+                    <p class="card__desc">Keep a track on your JEE Prep + Study Time</p>
+                    <span class="card__arrow">
+                        <i data-lucide="arrow-up-right"></i>
+                    </span>
+                </div>
+            </a>
+
+            <!-- Card 3 — OJEET-Extension -->
+            <a href="#" class="card" style="--i: 2" id="card-3">
+                <div class="card__image-wrap">
+                    <img src="assets/card3.png" alt="OJEET-Extension preview" class="card__image" />
+                </div>
+                <div class="card__content">
+                    <span class="card__tag">
+                        <i data-lucide="puzzle"></i>
+                        Extension
+                    </span>
+                    <h2 class="card__heading">OJEET-Extension</h2>
+                    <p class="card__desc">Make instant lecture notes in press of a button</p>
+                    <span class="card__arrow">
+                        <i data-lucide="arrow-up-right"></i>
+                    </span>
+                </div>
+            </a>
+
+        </section>
+    </main>
+
+    <!-- ═══ Footer ═══ -->
+    <footer class="site-footer">
+        &copy; 2026 Ojeet. All rights reserved.
+    </footer>
+
+    <!-- ═══ Lucide Icons ═══ -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <!-- ═══ Inline JS ═══ -->
+    <script>
+        (() => {
+            'use strict';
+
+            /* ── Lucide ── */
+            lucide.createIcons();
+
+            /* ── Mouse-reactive spotlight (lerp-based) ── */
+            const spotlight = document.querySelector('.bg-spotlight');
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let currentX = mouseX;
+            let currentY = mouseY;
+            const LERP = 0.08;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function animateSpotlight() {
+                currentX += (mouseX - currentX) * LERP;
+                currentY += (mouseY - currentY) * LERP;
+                document.documentElement.style.setProperty('--mouse-x', currentX + 'px');
+                document.documentElement.style.setProperty('--mouse-y', currentY + 'px');
+                requestAnimationFrame(animateSpotlight);
+            }
+            requestAnimationFrame(animateSpotlight);
+
+            /* ── Card fade-in via IntersectionObserver ── */
+            const cards = document.querySelectorAll('.card');
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                },
+                { threshold: 0.1 }
+            );
+            cards.forEach((card) => observer.observe(card));
+        })();
+    </script>
+</body>
+
+</html>
