@@ -4,9 +4,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OJEET-TOOLS — Bold tools for bold learners</title>
+    <title>OJEET-TOOLS</title>
     <meta name="description"
-        content="A personal hub showcasing three products by Ojeet — tools, apps, and platforms built for learners." />
+        content="A personal hub showcasing three products by Naman — tools, apps, and platforms built for learners." />
+    <link rel="icon" type="image/png" href="assets/icon.png" />
     <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -16,12 +17,14 @@
     <div class="bg-orb bg-orb--teal" aria-hidden="true"></div>
     <div class="bg-orb bg-orb--violet" aria-hidden="true"></div>
     <div class="bg-orb bg-orb--rose" aria-hidden="true"></div>
+    <canvas id="neural-net"></canvas>
     <div class="bg-spotlight" aria-hidden="true"></div>
     <div class="bg-noise" aria-hidden="true"></div>
 
     <!-- ═══ Header ═══ -->
     <header class="site-header">
-        <a href="https://github.com/ojeet" class="site-header__wordmark">OJEET-TOOLS</a>
+        <a href="https://github.com/Namankatiyar" class="site-header__wordmark" target="_blank"
+            rel="noopener noreferrer">OJEET-TOOLS</a>
     </header>
 
     <!-- ═══ Main ═══ -->
@@ -29,7 +32,8 @@
         <section class="card-grid">
 
             <!-- Card 1 — OJEET-Study -->
-            <a href="#" class="card" style="--i: 0" id="card-1">
+            <a href="https://ojeet-study.vercel.app" target="_blank" rel="noopener noreferrer" class="card"
+                style="--i: 0" id="card-1">
                 <div class="card__image-wrap">
                     <img src="assets/card1.png" alt="OJEET-Study preview" class="card__image" />
                 </div>
@@ -47,7 +51,8 @@
             </a>
 
             <!-- Card 2 — OJEE-Tracker -->
-            <a href="#" class="card" style="--i: 1" id="card-2">
+            <a href="https://pcm-tracker.vercel.app" target="_blank" rel="noopener noreferrer" class="card"
+                style="--i: 1" id="card-2">
                 <div class="card__image-wrap">
                     <img src="assets/card2.png" alt="OJEE-Tracker preview" class="card__image" />
                 </div>
@@ -65,7 +70,8 @@
             </a>
 
             <!-- Card 3 — OJEET-Extension -->
-            <a href="#" class="card" style="--i: 2" id="card-3">
+            <a href="https://github.com/Namankatiyar/ojeet-extension" target="_blank" rel="noopener noreferrer"
+                class="card" style="--i: 2" id="card-3">
                 <div class="card__image-wrap">
                     <img src="assets/card3.png" alt="OJEET-Extension preview" class="card__image" />
                 </div>
@@ -101,10 +107,61 @@
             /* ── Lucide ── */
             lucide.createIcons();
 
-            /* ── Mouse-reactive spotlight (lerp-based) ── */
+            /* ── Neural Net Animation ── */
+            const canvas = document.getElementById('neural-net');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const particleCount = 80;
+            const connectionDistance = 150;
+            const mouseRadius = 200;
+
+            let width, height;
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.init();
+                }
+
+                init() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.radius = Math.random() * 1.5 + 0.5;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(15, 150, 156, 0.5)';
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            /* ── Mouse-reactive spotlight & Neural interaction ── */
             const spotlight = document.querySelector('.bg-spotlight');
-            let mouseX = window.innerWidth / 2;
-            let mouseY = window.innerHeight / 2;
+            let mouseX = width / 2;
+            let mouseY = height / 2;
             let currentX = mouseX;
             let currentY = mouseY;
             const LERP = 0.08;
@@ -114,14 +171,53 @@
                 mouseY = e.clientY;
             });
 
-            function animateSpotlight() {
+            function animate() {
+                // Spotlight lerp
                 currentX += (mouseX - currentX) * LERP;
                 currentY += (mouseY - currentY) * LERP;
                 document.documentElement.style.setProperty('--mouse-x', currentX + 'px');
                 document.documentElement.style.setProperty('--mouse-y', currentY + 'px');
-                requestAnimationFrame(animateSpotlight);
+
+                // Neural Net
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    const p1 = particles[i];
+                    p1.update();
+                    p1.draw();
+
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dx = p1.x - p2.x;
+                        const dy = p1.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < connectionDistance) {
+                            // Check mouse distance for interaction
+                            const mdx = currentX - (p1.x + p2.x) / 2;
+                            const mdy = currentY - (p1.y + p2.y) / 2;
+                            const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+
+                            let opacity = (1 - dist / connectionDistance) * 0.2;
+
+                            if (mdist < mouseRadius) {
+                                opacity *= 3 * (1 - mdist / mouseRadius);
+                                ctx.strokeStyle = `rgba(15, 150, 156, ${opacity})`;
+                            } else {
+                                ctx.strokeStyle = `rgba(12, 112, 117, ${opacity})`;
+                            }
+
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                requestAnimationFrame(animate);
             }
-            requestAnimationFrame(animateSpotlight);
+            animate();
 
             /* ── Card fade-in via IntersectionObserver ── */
             const cards = document.querySelectorAll('.card');
